@@ -40,7 +40,10 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "-": "^0.0.1",
     "@modelcontextprotocol/sdk": "^1.17.1",
-    "hevy-ts": "^1.0.0"
+    "@types/jest": "^30.0.0",
+    "hevy-ts": "^1.0.0",
+    "save-dev": "^0.0.1-security"
   }
 }
