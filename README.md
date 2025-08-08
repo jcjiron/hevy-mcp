@@ -1,4 +1,4 @@
-# hevy-mcp
+# hevy-api-mcp
 
 MCP server for the Hevy API
 
@@ -20,7 +20,7 @@ MCP server for the Hevy API
 You can run the MCP server using npx (locally or globally, if published to npm):
 
 ```sh
-npx hevy-mcp
+npx hevy-api-mcp
 ```
 
 Or from your MCP config:
@@ -28,9 +28,9 @@ Or from your MCP config:
 ```json
 {
   "mcpServers": {
-    "hevy-mcp": {
+    "hevy-api-mcp": {
       "command": "npx",
-      "args": ["-y", "hevy-mcp"],
+      "args": ["-y", "hevy-api-mcp"],
       "env": {
         "HEVY_API_KEY": "<YOUR_API_KEY>"
       }
@@ -69,13 +69,13 @@ HEVY_API_KEY=your_api_key
 You can test the server locally:
 
 ```sh
-HEVY_API_KEY=your_api_key npx hevy-mcp
+HEVY_API_KEY=your_api_key npx hevy-api-mcp
 ```
 
 Or using the `.env` file:
 
 ```sh
-npx hevy-mcp
+npx hevy-api-mcp
 ```
 
 ---
