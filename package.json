@@ -4,7 +4,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
-    "hevy-mcp": "bin/hevy-mcp.js"
+    "hevy-api-mcp": "bin/hevy-api-mcp.js"
   },
   "scripts": {
     "test": "npm run build && jest",

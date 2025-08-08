@@ -12,7 +12,7 @@ const hevy = new HevyClient(httpClient);
 
 // Create an MCP server
 const server = new McpServer({
-    name: "hevy-mcp",
+    name: "hevy-api-mcp",
     version: "1.0.0"
 });
 
