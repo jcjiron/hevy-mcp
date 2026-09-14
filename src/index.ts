@@ -1,14 +1,27 @@
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { HevyClient, AxiosHttpClient } from "hevy-ts";
+import type { HevyClient as HevyClientInstance } from "hevy-ts";
 import dotenv from "dotenv";
 
-dotenv.config();
+// The MCP transport is JSON-RPC over stdio, so nothing but protocol
+// messages may hit stdout. dotenv's "injecting env" banner would corrupt
+// that framing, so silence it here and via env var (hevy-ts calls
+// dotenv.config() again internally and only respects the env var).
+process.env.DOTENV_CONFIG_QUIET = process.env.DOTENV_CONFIG_QUIET ?? "true";
+dotenv.config({ quiet: true });
 
-const apiKey = process.env.HEVY_API_KEY || "";
+const apiKey = process.env.HEVY_API_KEY || process.env.API_KEY || "";
+// hevy-ts reads process.env.API_KEY directly at import time (it ignores the
+// AxiosHttpClient constructor argument), so this must be set before hevy-ts
+// is required below.
+if (!process.env.API_KEY) {
+    process.env.API_KEY = apiKey;
+}
+
+const { HevyClient, AxiosHttpClient } = require("hevy-ts") as typeof import("hevy-ts");
 const httpClient = new AxiosHttpClient(apiKey);
-const hevy = new HevyClient(httpClient);
+const hevy: HevyClientInstance = new HevyClient(httpClient);
 
 // Create an MCP server
 const server = new McpServer({
