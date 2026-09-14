@@ -1,27 +1,16 @@
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import type { HevyClient as HevyClientInstance } from "hevy-ts";
+import { HevyClient } from "hevy-ts";
 import dotenv from "dotenv";
 
 // The MCP transport is JSON-RPC over stdio, so nothing but protocol
 // messages may hit stdout. dotenv's "injecting env" banner would corrupt
-// that framing, so silence it here and via env var (hevy-ts calls
-// dotenv.config() again internally and only respects the env var).
-process.env.DOTENV_CONFIG_QUIET = process.env.DOTENV_CONFIG_QUIET ?? "true";
+// that framing.
 dotenv.config({ quiet: true });
 
-const apiKey = process.env.HEVY_API_KEY || process.env.API_KEY || "";
-// hevy-ts reads process.env.API_KEY directly at import time (it ignores the
-// AxiosHttpClient constructor argument), so this must be set before hevy-ts
-// is required below.
-if (!process.env.API_KEY) {
-    process.env.API_KEY = apiKey;
-}
-
-const { HevyClient, AxiosHttpClient } = require("hevy-ts") as typeof import("hevy-ts");
-const httpClient = new AxiosHttpClient(apiKey);
-const hevy: HevyClientInstance = new HevyClient(httpClient);
+const apiKey = process.env.HEVY_API_KEY || "";
+const hevy = new HevyClient(apiKey);
 
 // Create an MCP server
 const server = new McpServer({
@@ -195,6 +184,120 @@ server.registerTool(
     async ({ title }) => {
         const folder = await hevy.createRoutineFolder({ title });
         return { content: [{ type: "text", text: JSON.stringify(folder, null, 2) }] };
+    }
+);
+
+server.registerTool(
+    "getRoutines",
+    {
+        title: "Get Routines",
+        description: "List all routines (reusable workout templates)",
+        inputSchema: { page: z.number().optional(), pageSize: z.number().optional() },
+    },
+    async ({ page = 1, pageSize = 10 }) => {
+        const routines = await hevy.getRoutines(page, pageSize);
+        return { content: [{ type: "text", text: JSON.stringify(routines, null, 2) }] };
+    }
+);
+
+server.registerTool(
+    "getRoutineById",
+    {
+        title: "Get Routine By ID",
+        description: "Get a routine (reusable workout template) by its ID",
+        inputSchema: { routineId: z.string() },
+    },
+    async ({ routineId }) => {
+        const routine = await hevy.getRoutineById(routineId);
+        return { content: [{ type: "text", text: JSON.stringify(routine, null, 2) }] };
+    }
+);
+
+const routineExerciseSchema = z.object({
+    exercise_template_id: z.string(),
+    // Exercises sharing the same superset_id are grouped into one superset,
+    // performed back to back; null means the exercise stands on its own.
+    superset_id: z.number().nullable().optional(),
+    rest_seconds: z.number().nullable().optional(),
+    notes: z.string().nullable().optional(),
+    sets: z.array(z.object({
+        type: z.string(),
+        weight_kg: z.number().nullable().optional(),
+        reps: z.number().nullable().optional(),
+        rep_range: z.object({
+            start: z.number().nullable().optional(),
+            end: z.number().nullable().optional(),
+        }).nullable().optional(),
+        distance_meters: z.number().nullable().optional(),
+        duration_seconds: z.number().nullable().optional(),
+        rpe: z.number().nullable().optional(),
+        custom_metric: z.number().nullable().optional(),
+    })),
+});
+
+function normalizeRoutineExercises(exercises: z.infer<typeof routineExerciseSchema>[]) {
+    return exercises.map(ex => ({
+        ...ex,
+        superset_id: ex.superset_id ?? null,
+        rest_seconds: ex.rest_seconds ?? null,
+        notes: ex.notes ?? null,
+        sets: ex.sets.map(set => ({
+            ...set,
+            weight_kg: set.weight_kg ?? null,
+            reps: set.reps ?? null,
+            rep_range: set.rep_range
+                ? { start: set.rep_range.start ?? null, end: set.rep_range.end ?? null }
+                : null,
+            distance_meters: set.distance_meters ?? null,
+            duration_seconds: set.duration_seconds ?? null,
+            rpe: set.rpe ?? null,
+            custom_metric: set.custom_metric ?? null,
+        })),
+    }));
+}
+
+server.registerTool(
+    "createRoutine",
+    {
+        title: "Create Routine",
+        description: "Create a new routine (reusable workout template)",
+        inputSchema: {
+            title: z.string(),
+            folder_id: z.number().nullable().optional(),
+            notes: z.string().optional(),
+            exercises: z.array(routineExerciseSchema),
+        },
+    },
+    async ({ title, folder_id, notes, exercises }) => {
+        const routine = await hevy.createRoutine({
+            title,
+            folder_id: folder_id ?? null,
+            notes,
+            exercises: normalizeRoutineExercises(exercises),
+        });
+        return { content: [{ type: "text", text: JSON.stringify(routine, null, 2) }] };
+    }
+);
+
+server.registerTool(
+    "updateRoutine",
+    {
+        title: "Update Routine",
+        description: "Update an existing routine, e.g. to reorder exercises or group them into supersets",
+        inputSchema: {
+            routineId: z.string(),
+            title: z.string(),
+            notes: z.string().nullable().optional(),
+            exercises: z.array(routineExerciseSchema),
+        },
+    },
+    async ({ routineId, title, notes, exercises }) => {
+        const routine = await hevy.updateRoutine(routineId, {
+            title,
+            notes: notes ?? null,
+            exercises: normalizeRoutineExercises(exercises),
+        });
+        return { content: [{ type: "text", text: JSON.stringify(routine, null, 2) }] };
     }
 );
 

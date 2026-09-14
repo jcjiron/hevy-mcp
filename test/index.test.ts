@@ -11,6 +11,10 @@ const mockHevy = {
     getRoutineFolders: jest.fn().mockResolvedValue([{ id: 1, title: 'Folder' }]),
     getRoutineFolderById: jest.fn().mockResolvedValue({ id: 1, title: 'Folder' }),
     createRoutineFolder: jest.fn().mockResolvedValue({ id: 2, title: 'New Folder' }),
+    getRoutines: jest.fn().mockResolvedValue({ page: 1, page_count: 1, routines: [{ id: 'r1', title: 'Leg Day' }] }),
+    getRoutineById: jest.fn().mockResolvedValue({ id: 'r1', title: 'Leg Day', exercises: [] }),
+    createRoutine: jest.fn().mockResolvedValue({ id: 'r2', title: 'New Routine' }),
+    updateRoutine: jest.fn().mockResolvedValue({ id: 'r1', title: 'Leg Day (reordered)' }),
     getExerciseTemplates: jest.fn().mockResolvedValue([{ id: 'e1', title: 'Bench' }]),
     getExerciseTemplateById: jest.fn().mockResolvedValue({ id: 'e1', title: 'Bench' }),
     getWebhookSubscription: jest.fn().mockResolvedValue({ id: 'webhook1' }),
@@ -56,6 +60,34 @@ describe('Hevy MCP Tools', () => {
     it('createRoutineFolder returns new folder', async () => {
         const result = await mockHevy.createRoutineFolder({ title: 'New Folder' });
         expect(result).toHaveProperty('title', 'New Folder');
+    });
+
+    it('getRoutines returns routines', async () => {
+        const result = await mockHevy.getRoutines(1, 10);
+        expect(result.routines[0]).toHaveProperty('title', 'Leg Day');
+    });
+
+    it('getRoutineById returns a routine', async () => {
+        const result = await mockHevy.getRoutineById('r1');
+        expect(result).toHaveProperty('id', 'r1');
+    });
+
+    it('createRoutine returns created routine', async () => {
+        const input = {
+            title: 'New Routine',
+            exercises: [
+                { exercise_template_id: 'et1', superset_id: 0, sets: [{ type: 'normal', reps: 10 }] },
+                { exercise_template_id: 'et2', superset_id: 0, sets: [{ type: 'normal', reps: 8 }] },
+            ],
+        };
+        const result = await mockHevy.createRoutine(input);
+        expect(result).toHaveProperty('title', 'New Routine');
+    });
+
+    it('updateRoutine returns updated routine', async () => {
+        const input = { title: 'Leg Day (reordered)', exercises: [] };
+        const result = await mockHevy.updateRoutine('r1', input);
+        expect(result).toHaveProperty('title', 'Leg Day (reordered)');
     });
 
     it('getExerciseTemplates returns templates', async () => {
