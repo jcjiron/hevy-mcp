@@ -18,7 +18,7 @@ const fixtureRoutine: Routine = {
             notes: "",
             exercise_template_id: "et-leg",
             superset_id: null,
-            sets: [{ index: 0, type: "normal", weight_kg: 40, reps: 12, rep_range: null, distance_meters: null, duration_seconds: null, rpe: null, custom_metric: null }],
+            sets: [{ index: 0, type: "normal", weight_kg: 40, reps: 12, distance_meters: null, duration_seconds: null, custom_metric: null }],
         },
         {
             index: 1,
@@ -27,7 +27,7 @@ const fixtureRoutine: Routine = {
             notes: "",
             exercise_template_id: "et-hamstring",
             superset_id: null,
-            sets: [{ index: 0, type: "normal", weight_kg: 30, reps: 12, rep_range: null, distance_meters: null, duration_seconds: null, rpe: null, custom_metric: null }],
+            sets: [{ index: 0, type: "normal", weight_kg: 30, reps: 12, distance_meters: null, duration_seconds: null, custom_metric: null }],
         },
         {
             index: 2,
@@ -36,7 +36,7 @@ const fixtureRoutine: Routine = {
             notes: "",
             exercise_template_id: "et-glute",
             superset_id: null,
-            sets: [{ index: 0, type: "normal", weight_kg: 60.5, reps: 10, rep_range: null, distance_meters: null, duration_seconds: null, rpe: 8, custom_metric: null }],
+            sets: [{ index: 0, type: "normal", weight_kg: 60.5, reps: 10, distance_meters: null, duration_seconds: null, custom_metric: 8 }],
         },
         {
             index: 3,
@@ -45,7 +45,7 @@ const fixtureRoutine: Routine = {
             notes: "unrelated",
             exercise_template_id: "et-calf",
             superset_id: null,
-            sets: [{ index: 0, type: "normal", weight_kg: 80, reps: 15, rep_range: null, distance_meters: null, duration_seconds: null, rpe: null, custom_metric: null }],
+            sets: [{ index: 0, type: "normal", weight_kg: 80, reps: 15, distance_meters: null, duration_seconds: null, custom_metric: null }],
         },
     ],
 };
@@ -82,7 +82,7 @@ describe("buildSupersetRegroupedRequest", () => {
 
         // set data untouched, including the float weight
         expect(glute.sets[0].weight_kg).toBe(60.5);
-        expect(glute.sets[0].rpe).toBe(8);
+        expect(glute.sets[0].custom_metric).toBe(8);
     });
 
     it("preserves each exercise's own rest_seconds when restSecondsBetweenGroups is omitted", () => {
@@ -147,7 +147,7 @@ describe("buildSupersetRegroupedRequest", () => {
                 notes: ex.notes ?? "",
                 exercise_template_id: ex.exercise_template_id,
                 superset_id: ex.superset_id ?? null,
-                sets: ex.sets.map((s, si) => ({ index: si, ...s, weight_kg: s.weight_kg ?? null, reps: s.reps ?? null, rep_range: s.rep_range ?? null, distance_meters: s.distance_meters ?? null, duration_seconds: s.duration_seconds ?? null, rpe: s.rpe ?? null, custom_metric: s.custom_metric ?? null })),
+                sets: ex.sets.map((s, si) => ({ index: si, ...s, weight_kg: s.weight_kg ?? null, reps: s.reps ?? null, distance_meters: s.distance_meters ?? null, duration_seconds: s.duration_seconds ?? null, custom_metric: s.custom_metric ?? null })),
             })),
         };
 

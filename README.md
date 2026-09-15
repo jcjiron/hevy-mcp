@@ -104,8 +104,12 @@ routine's entire exercise/set payload even to change one field. That's
 fine for one routine, but breaks down at real scale (tested against a
 77-routine, ~1,400-set catalog): downloading everything to answer "what
 routines do I have" cost ~760KB of JSON where the answer needed about 7%
-of that, and a naive rename-by-resend risks dropping a weight, a
-`rep_range`, or an `rpe` value nobody meant to touch.
+of that, and a naive rename-by-resend risks dropping a weight or a
+`custom_metric` value nobody meant to touch - or, if the payload is built
+by spreading validated input instead of an explicit allowlist, sending a
+field the Routines API doesn't recognize at all (`rep_range`/`rpe` belong
+to workout sets; `POST`/`PUT /v1/routines` reject them outright with a
+400 per set, which is exactly what happened here before it was fixed).
 
 The tools above exist to make that safe:
 
