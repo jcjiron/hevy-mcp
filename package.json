@@ -44,7 +44,7 @@
     "@modelcontextprotocol/sdk": "^1.17.1",
     "@types/jest": "^30.0.0",
     "dotenv": "^17.2.1",
-    "hevy-ts": "git+https://github.com/jcjiron/hevy-ts.git#eed63e57ba3f2de53dade14c80f6073e550d4e60",
+    "hevy-ts": "^1.1.1",
     "save-dev": "^0.0.1-security"
   }
 }
