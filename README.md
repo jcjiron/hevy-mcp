@@ -15,11 +15,6 @@ MCP server for the Hevy API
    npm run build
    ```
 
-> **Note:** `hevy-ts` is temporarily pinned to a GitHub commit (not the npm
-> registry) because the Routines API support this MCP server relies on
-> hasn't been published to npm yet. Once it is, the dependency will switch
-> back to a normal npm version range.
-
 ## Usage with npx
 
 You can run the MCP server using npx (locally or globally, if published to npm):
