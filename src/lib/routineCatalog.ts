@@ -43,10 +43,10 @@ export function toSummary(routine: Routine): RoutineSummary {
     const supersetIds = new Set<number>();
     let ungrouped_count = 0;
     for (const ex of routine.exercises) {
-        if (ex.supersets_id === null || ex.supersets_id === undefined) {
+        if (ex.superset_id === null || ex.superset_id === undefined) {
             ungrouped_count++;
         } else {
-            supersetIds.add(ex.supersets_id);
+            supersetIds.add(ex.superset_id);
         }
     }
     return {
@@ -69,7 +69,7 @@ export function toExercisesView(routine: Routine) {
             exercise_template_id: ex.exercise_template_id,
             title: ex.title,
             set_count: ex.sets.length,
-            superset_id: ex.supersets_id,
+            superset_id: ex.superset_id,
         })),
     };
 }
@@ -79,7 +79,7 @@ export function toStructureView(routine: Routine) {
     const supersetIndex = new Map<number, number>();
     for (const ex of routine.exercises) {
         const entry = { template_id: ex.exercise_template_id, title: ex.title };
-        const key = ex.supersets_id;
+        const key = ex.superset_id;
         if (key === null || key === undefined) {
             groups.push([entry]);
             continue;

@@ -19,17 +19,17 @@ const routine: Routine = makeRoutine({
     exercises: [
         {
             index: 0, title: "Bench", rest_seconds: 90, notes: "", exercise_template_id: "et-bench",
-            supersets_id: 0,
+            superset_id: 0,
             sets: [{ index: 0, type: "normal", weight_kg: 50.126, reps: 8, rep_range: null, distance_meters: null, duration_seconds: null, rpe: null, custom_metric: null }],
         },
         {
             index: 1, title: "Fly", rest_seconds: 60, notes: "", exercise_template_id: "et-fly",
-            supersets_id: 0,
+            superset_id: 0,
             sets: [{ index: 0, type: "normal", weight_kg: 12, reps: 12, rep_range: null, distance_meters: null, duration_seconds: null, rpe: null, custom_metric: null }],
         },
         {
             index: 2, title: "Tricep Pushdown", rest_seconds: 60, notes: "", exercise_template_id: "et-tricep",
-            supersets_id: null,
+            superset_id: null,
             sets: [
                 { index: 0, type: "normal", weight_kg: 20, reps: 10, rep_range: null, distance_meters: null, duration_seconds: null, rpe: null, custom_metric: null },
                 { index: 1, type: "normal", weight_kg: 20, reps: 10, rep_range: null, distance_meters: null, duration_seconds: null, rpe: null, custom_metric: null },
@@ -90,7 +90,7 @@ describe("findDeletionCandidates", () => {
             title: "Leg Day",
             exercises: [{
                 index: 0, title: "Squat", rest_seconds: 90, notes: "", exercise_template_id: "et-squat",
-                supersets_id: null,
+                superset_id: null,
                 sets: [{ index: 0, type: "normal", weight_kg: 100, reps: 5, rep_range: null, distance_meters: null, duration_seconds: null, rpe: null, custom_metric: null }],
             }],
         });

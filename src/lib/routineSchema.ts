@@ -51,16 +51,11 @@ export function normalizeRoutineExercises(exercises: z.infer<typeof routineExerc
  * setRoutineSupersets so that fields callers never asked to change (set
  * weights, reps, rpe, per-set notes, rep_range, custom_metric) survive a
  * write byte-for-byte.
- *
- * Note the field rename: the read response calls this field
- * `supersets_id`, the write request calls it `superset_id` - that
- * inconsistency is in Hevy's own API, not here (see hevy-ts's routines.ts
- * model for the same note).
  */
 export function routineExerciseToRequest(ex: RoutineExercise): RoutineExerciseRequest {
     return {
         exercise_template_id: ex.exercise_template_id,
-        superset_id: ex.supersets_id,
+        superset_id: ex.superset_id,
         rest_seconds: ex.rest_seconds,
         notes: ex.notes,
         sets: ex.sets.map(s => ({
